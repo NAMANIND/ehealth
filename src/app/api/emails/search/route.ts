@@ -81,9 +81,15 @@ export async function GET(request: Request) {
             );
 
             return emailDetails;
-          } catch (error: any) {
+          } catch (error: unknown) {
             // If the error is due to an expired token and we have a refresh token
-            if (error.code === 401 && user.refreshToken) {
+            if (
+              error &&
+              typeof error === "object" &&
+              "code" in error &&
+              error.code === 401 &&
+              user.refreshToken
+            ) {
               try {
                 // Refresh the access token
                 const newAccessToken = await refreshAccessToken(
